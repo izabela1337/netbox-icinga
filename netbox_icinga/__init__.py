@@ -29,12 +29,11 @@ class NetboxIcingaConfig(PluginConfig):
     author_email = "totallynotspykle@gmail.com"
 
     # Configuration parameters that MUST be defined by the user (if any)
-    required_settings = ["livestatus_host", "icinga_base_url"]
+    required_settings = ["icinga_base_url", "icinga_username", "icinga_password"]
 
     # Default configuration parameter values, if not set by the user
     default_settings = {
-        "livestatus_host_overrides": [],
-        "livestatus_port": 6557,
+        "livestatus_port": 5665,
         "icinga_base_url_overrides": [],
     }
 

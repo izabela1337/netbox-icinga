@@ -10,16 +10,10 @@ class icingaStatus(PluginTemplateExtension):
         super().__init__(context)
         self.settings = self.context["settings"].PLUGINS_CONFIG["netbox_icinga"]
         self.hostname = self.context["object"].name or ""  # name can be None.
-        self.livestatus_host = self.get_livestatus_host()
         self.livestatus_port = self.settings["livestatus_port"]
+        self.icinga_username = self.settings["icinga_username"]
+        self.icinga_password = self.settings["icinga_password"]
         self.icinga_base_url = self.get_icinga_base_url()
-
-    def get_livestatus_host(self):
-        """Uses settings and potential overrides to determine the icinga host."""
-        for regex, livestatus_host in self.settings["livestatus_host_overrides"]:
-            if re.search(regex, self.hostname):
-                return livestatus_host
-        return self.settings["livestatus_host"]
 
     def get_icinga_base_url(self):
         """Uses settings and potential overrides to determine the icinga url."""
@@ -38,13 +32,15 @@ class icingaStatus(PluginTemplateExtension):
     def right_page(self):
         """Adds a status table to the page."""
         extra_context = {
-            "icinga_base_url": self.icinga_base_url,
+            "icinga_base_url": self.icinga_base_url
         }
         try:
             extra_context["icinga"] = livestatus.hoststatus(
                 self.hostname,
-                self.livestatus_host,
+                self.icinga_base_url,
                 self.livestatus_port,
+                self.icinga_username,
+                self.icinga_password
             )
         except Exception:  # pylint: disable=broad-except
             # Be very defensive so that broken icinga doesn't break Netbox.
